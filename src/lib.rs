@@ -11,8 +11,7 @@ pub use render::pdf::render_pdf;
 pub use render::svg::render_svg;
 use std::ops::{Add, Div, Mul, Sub};
 use thiserror::Error;
-
-use std::convert::TryFrom;
+use tracing::warn;
 
 #[derive(Error, Debug)]
 pub enum Error {
@@ -118,19 +117,29 @@ pub enum Color {
     White,
     Blue,
     Red,
+    Yellow,
+    Green,
+    Pink,
+    OverlappingGrey,
+    Unknown(i32),
 }
 
-impl TryFrom<i32> for Color {
-    type Error = Error;
-
-    fn try_from(color_i: i32) -> Result<Self> {
+impl From<i32> for Color {
+    fn from(color_i: i32) -> Self {
         match color_i {
-            0 => Ok(Color::Black),
-            1 => Ok(Color::Grey),
-            2 => Ok(Color::White),
-            6 => Ok(Color::Blue),
-            7 => Ok(Color::Red),
-            _ => Err(Error::UnknownColor(color_i)),
+            0 => Color::Black,
+            1 => Color::Grey,
+            2 => Color::White,
+            3 => Color::Yellow,
+            4 => Color::Green,
+            5 => Color::Pink,
+            6 => Color::Blue,
+            7 => Color::Red,
+            8 => Color::OverlappingGrey,
+            _ => {
+                warn!("Unexpected color {}", color_i);
+                Color::Unknown(color_i)
+            }
         }
     }
 }
@@ -152,6 +161,7 @@ pub struct Line {
 }
 
 impl Line {
+    #[allow(dead_code)]
     fn segment_length(&self, i: usize) -> Result<f32> {
         if i + 1 >= self.points.len() {
             Err(Error::InvalidSegmentIndex(i))
@@ -160,6 +170,7 @@ impl Line {
         }
     }
 
+    #[allow(dead_code)]
     fn length(&self) -> f32 {
         self.points
             .iter()
@@ -170,6 +181,7 @@ impl Line {
 
     /// Average of each segment's width, weighted by the segment length.
     /// Primarily useful for rendering to targets requiring a fixed line width.
+    #[allow(dead_code)]
     fn average_width(&self) -> f32 {
         // TODO: Are the width values of the first and second point always the same?
 
@@ -190,6 +202,7 @@ impl Line {
     /// polyline. Each offset vector indicates the direction and distance for
     /// offsetting the line segment. The offset vector can be mirrored to get
     /// the offset to the other side of the polyline segment.
+    #[allow(dead_code)]
     fn offsets(&self, offset_distance: f32) -> Vec<DirectionVec> {
         let points = &self.points;
         (1..points.len())
@@ -200,6 +213,7 @@ impl Line {
             .collect()
     }
 
+    #[allow(dead_code)]
     fn with_points(template: Point, points: &[(f32, f32)]) -> Line {
         Line {
             points: points
@@ -293,6 +307,7 @@ pub struct DirectionVec {
 }
 
 impl DirectionVec {
+    #[allow(dead_code)]
     const ZERO: DirectionVec = DirectionVec { x: 0.0, y: 0.0 };
 
     fn length(&self) -> f32 {
@@ -420,8 +435,12 @@ pub struct LayerColor {
     pub black: String,
     pub grey: String,
     pub white: String,
+    pub yellow: String,
+    pub green: String,
+    pub pink: String,
     pub blue: String,
     pub red: String,
+    pub overlapping_grey: String,
 }
 
 impl Default for LayerColor {
@@ -430,8 +449,12 @@ impl Default for LayerColor {
             black: "black".to_string(),
             grey: "#bfbfbf".to_string(),
             white: "white".to_string(),
+            yellow: "yellow".to_string(),
+            green: "green".to_string(),
+            pink: "fuchsia".to_string(),
             blue: "#0062cc".to_string(),
             red: "#d90707".to_string(),
+            overlapping_grey: "#bfbfbf".to_string(),
         }
     }
 }

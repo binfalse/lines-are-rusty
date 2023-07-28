@@ -54,7 +54,7 @@ impl LinesDataReader<'_> {
     fn read_line(&mut self) -> Result<Line> {
         Ok(Line {
             brush_type: BrushType::try_from(self.read_i32()?)?,
-            color: Color::try_from(self.read_i32()?)?,
+            color: Color::from(self.read_i32()?),
             unknown_line_attribute: self.read_i32()?,
             brush_base_size: self.read_f32()?, // width
             unknown_line_attribute_2: if self.version >= 5 {

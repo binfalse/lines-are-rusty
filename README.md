@@ -28,3 +28,11 @@ lines-are-rusty notebook-page.rm -o notebook-page.svg
 # Render PDF from notebook page
 lines-are-rusty notebook-page.rm -o notebook-page.pdf
 ```
+
+## Changelog
+
+### 2023-08
+* implemented support for colors of the highlighter brush
+* extended the custom-colors -> you now need to specify 9 colors per layer if you want to overwrite them
+* using grey as fallback for unexpected colors
+* got rid of a couple build warnings

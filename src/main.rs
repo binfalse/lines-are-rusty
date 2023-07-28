@@ -90,9 +90,9 @@ fn main() -> Result<()> {
         .split(';')
         .map(|layer| {
             let c = layer.split(',').collect::<Vec<&str>>();
-            if c.len() != 5 {
+            if c.len() != 9 {
                 eprintln!(
-                    "Expected 5 colors per layer (black, grey, white, blue, red). Found: {}",
+                    "Expected 9 colors per layer (black, grey, white, blue, red, yellow, green, pink, overlapping_grey). Found: {}",
                     layer
                 );
                 exit(1);
@@ -103,6 +103,10 @@ fn main() -> Result<()> {
                 white: c[2].to_string(),
                 blue: c[3].to_string(),
                 red: c[4].to_string(),
+                yellow: c[5].to_string(),
+                green: c[6].to_string(),
+                pink: c[7].to_string(),
+                overlapping_grey: c[8].to_string(),
             }
         })
         .collect();

@@ -1,4 +1,4 @@
-use crate::{BrushType, Color, LayerColor, Line, Page, Point};
+use crate::{Color, LayerColor, Line, Page, Point};
 use core::f32::{INFINITY, NEG_INFINITY};
 
 pub(crate) struct BoundingBox {
@@ -47,21 +47,24 @@ impl BoundingBox {
 pub fn line_to_css_color(line: &Line, layer_idx: usize, layer_colors: &[LayerColor]) -> String {
     // If no layer color is provided for this layer, default to the last layer we have colors for.
     let layer_colors = layer_colors.get(layer_idx).cloned().unwrap_or_default();
-    match line.brush_type {
-        BrushType::Highlighter => "rgb(240, 220, 40)".to_string(),
-        _ => match line.color {
-            Color::Black => layer_colors.black,
-            Color::Grey => layer_colors.grey,
-            Color::White => layer_colors.white,
-            Color::Blue => layer_colors.blue,
-            Color::Red => layer_colors.red,
-        },
+    match line.color {
+        Color::Black => layer_colors.black,
+        Color::Grey => layer_colors.grey,
+        Color::White => layer_colors.white,
+        Color::Yellow => layer_colors.yellow,
+        Color::Green => layer_colors.green,
+        Color::Pink => layer_colors.pink,
+        Color::Blue => layer_colors.blue,
+        Color::Red => layer_colors.red,
+        Color::OverlappingGrey => layer_colors.overlapping_grey,
+        Color::Unknown(_) => layer_colors.grey,
     }
 }
 
 /// Creates a vector of quadrilateral coordinates enclosing each segment of the
 /// line. The length of the returned vector is always a multiple of 8 (4 points
 /// à 2 coordinates per quadrilateral.)
+#[allow(dead_code)]
 pub(crate) fn segment_quads(line: &Line) -> Vec<f32> {
     let points = &line.points;
     let offset_distance = if points.is_empty() {
